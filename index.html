@@ -1,517 +1,1281 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sat Nam Yoga Studio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --bg:#0a0f1e;--surface:#111827;--card:#16213e;
-      --accent:#00e5ff;--text:#e8eaf0;--muted:#8892a4;
-      --border:#1e2d45;--success:#00c896;--danger:#ff4d6d;
-      --yoga:#00e5ff;--silla:#c084fc;--kund:#fb923c;
-    }
-    body{
-      font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);
-      min-height:100vh;display:flex;flex-direction:column;align-items:center;
-      padding:36px 16px 60px;overflow-x:hidden;
-    }
-    body::before{content:'';position:fixed;top:-200px;left:-200px;width:600px;height:600px;
-      background:radial-gradient(circle,rgba(0,229,255,0.06) 0%,transparent 70%);pointer-events:none;z-index:0}
-    body::after{content:'';position:fixed;bottom:-200px;right:-200px;width:600px;height:600px;
-      background:radial-gradient(circle,rgba(200,100,255,0.05) 0%,transparent 70%);pointer-events:none;z-index:0}
-    .container{width:100%;max-width:900px;position:relative;z-index:1}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sat Nam Yoga Studio</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #0a0f1e;
+        --surface: #111827;
+        --card: #16213e;
+        --accent: #00e5ff;
+        --text: #e8eaf0;
+        --muted: #8892a4;
+        --border: #1e2d45;
+        --success: #00c896;
+        --danger: #ff4d6d;
+        --yoga: #00e5ff;
+        --silla: #c084fc;
+        --kund: #fb923c;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 36px 16px 60px;
+        overflow-x: hidden;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        top: -200px;
+        left: -200px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(0, 229, 255, 0.06) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
+      body::after {
+        content: "";
+        position: fixed;
+        bottom: -200px;
+        right: -200px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(200, 100, 255, 0.05) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
+      .container {
+        width: 100%;
+        max-width: 900px;
+        position: relative;
+        z-index: 1;
+      }
 
-    /* LOGO */
-    .logo{text-align:center;margin-bottom:28px;animation:fadeDown .5s ease both}
-    .logo .badge{display:inline-block;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);
-      color:var(--accent);font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;
-      padding:6px 16px;border-radius:20px;margin-bottom:10px}
-    .logo h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,8vw,52px);letter-spacing:5px;
-      background:linear-gradient(135deg,#fff 0%,var(--accent) 100%);
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+      /* LOGO */
+      .logo {
+        text-align: center;
+        margin-bottom: 28px;
+        animation: fadeDown 0.5s ease both;
+      }
+      .logo .badge {
+        display: inline-block;
+        background: rgba(0, 229, 255, 0.1);
+        border: 1px solid rgba(0, 229, 255, 0.3);
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        padding: 6px 16px;
+        border-radius: 20px;
+        margin-bottom: 10px;
+      }
+      .logo h1 {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: clamp(32px, 8vw, 52px);
+        letter-spacing: 5px;
+        background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
 
-    /* TABS */
-    .topnav{display:flex;justify-content:center;gap:8px;margin-bottom:32px;flex-wrap:wrap}
-    .tab-btn{padding:9px 22px;border-radius:22px;border:1.5px solid var(--border);background:transparent;
-      color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
-      cursor:pointer;transition:all .2s;letter-spacing:.5px;white-space:nowrap}
-    .tab-btn.active{background:rgba(0,229,255,0.1);border-color:var(--accent);color:var(--accent)}
+      /* TABS */
+      .topnav {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+      }
+      .tab-btn {
+        padding: 9px 22px;
+        border-radius: 22px;
+        border: 1.5px solid var(--border);
+        background: transparent;
+        color: var(--muted);
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+      }
+      .tab-btn.active {
+        background: rgba(0, 229, 255, 0.1);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
 
-    /* CARD */
-    .card{background:var(--card);border:1px solid var(--border);border-radius:20px;
-      padding:32px;box-shadow:0 24px 80px rgba(0,0,0,0.4);max-width:580px;margin:0 auto}
+      /* CARD */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 32px;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+        max-width: 580px;
+        margin: 0 auto;
+      }
 
-    .step{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-    .step-num{width:24px;height:24px;background:linear-gradient(135deg,var(--accent),#0099bb);
-      border-radius:50%;display:flex;align-items:center;justify-content:center;
-      font-size:11px;font-weight:700;color:var(--bg);flex-shrink:0}
-    .step label{font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
-    .field-group{margin-bottom:26px}
-    .name-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+      .step {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .step-num {
+        width: 24px;
+        height: 24px;
+        background: linear-gradient(135deg, var(--accent), #0099bb);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--bg);
+        flex-shrink: 0;
+      }
+      .step label {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .field-group {
+        margin-bottom: 26px;
+      }
+      .name-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
 
-    input[type="text"],select{
-      width:100%;background:var(--surface);border:1.5px solid var(--border);color:var(--text);
-      font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 16px;border-radius:10px;outline:none;
-      transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
-    input::placeholder{color:var(--muted)}
-    input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,0.1)}
-    select{cursor:pointer;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238892a4' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
-      background-repeat:no-repeat;background-position:right 16px center;padding-right:40px}
-    select option{background:#111827;color:var(--text)}
+      input[type="text"],
+      select {
+        width: 100%;
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        font-size: 15px;
+        padding: 13px 16px;
+        border-radius: 10px;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      input::placeholder {
+        color: var(--muted);
+      }
+      input:focus,
+      select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+      }
+      select {
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238892a4' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        padding-right: 40px;
+      }
+      select option {
+        background: #111827;
+        color: var(--text);
+      }
 
-    .disciplines-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px}
-    .disc-option{position:relative}
-    .disc-option input[type="radio"]{position:absolute;opacity:0;width:0;height:0}
-    .disc-option label{display:flex;flex-direction:column;align-items:center;gap:6px;
-      background:var(--surface);border:1.5px solid var(--border);border-radius:12px;
-      padding:14px 10px;cursor:pointer;text-align:center;font-size:12px;font-weight:500;
-      color:var(--muted);transition:all .2s}
-    .disc-option label .icon{font-size:22px;line-height:1}
-    .disc-option input[type="radio"]:checked+label{border-color:var(--accent);
-      background:rgba(0,229,255,0.08);color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,0.1)}
+      .disciplines-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 4px;
+      }
+      .disc-option {
+        position: relative;
+      }
+      .disc-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .disc-option label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 14px 10px;
+        cursor: pointer;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--muted);
+        transition: all 0.2s;
+      }
+      .disc-option label .icon {
+        font-size: 22px;
+        line-height: 1;
+      }
+      .disc-option input[type="radio"]:checked + label {
+        border-color: var(--accent);
+        background: rgba(0, 229, 255, 0.08);
+        color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+      }
 
-    .schedule-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
-    .divider{height:1px;background:var(--border);margin:24px 0}
+      .schedule-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 4px;
+      }
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 24px 0;
+      }
 
-    .btn-submit{width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),#0099bb);
-      color:var(--bg);font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;
-      border:none;border-radius:12px;cursor:pointer;transition:transform .15s,box-shadow .2s;
-      box-shadow:0 8px 30px rgba(0,229,255,0.25)}
-    .btn-submit:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,229,255,0.4)}
+      .btn-submit {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, var(--accent), #0099bb);
+        color: var(--bg);
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 20px;
+        letter-spacing: 3px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.2s;
+        box-shadow: 0 8px 30px rgba(0, 229, 255, 0.25);
+      }
+      .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 229, 255, 0.4);
+      }
 
-    .success-box{display:none;background:rgba(0,200,150,0.1);border:1.5px solid var(--success);
-      border-radius:14px;padding:24px;text-align:center;max-width:580px;margin:16px auto 0}
-    .success-box .checkmark{font-size:40px;margin-bottom:12px}
-    .success-box h3{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;
-      color:var(--success);margin-bottom:8px}
-    .success-box p{color:var(--muted);font-size:14px;line-height:1.6}
-    .summary{background:rgba(0,0,0,0.3);border-radius:10px;padding:14px 16px;margin:16px 0;
-      text-align:left;font-size:14px;line-height:2}
-    .summary span{color:var(--accent);font-weight:600}
-    .btn-nuevo{margin-top:12px;background:transparent;border:1.5px solid var(--success);
-      color:var(--success);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
-      padding:10px 24px;border-radius:8px;cursor:pointer;transition:background .2s}
-    .btn-nuevo:hover{background:rgba(0,200,150,0.1)}
+      .success-box {
+        display: none;
+        background: rgba(0, 200, 150, 0.1);
+        border: 1.5px solid var(--success);
+        border-radius: 14px;
+        padding: 24px;
+        text-align: center;
+        max-width: 580px;
+        margin: 16px auto 0;
+      }
+      .success-box .checkmark {
+        font-size: 40px;
+        margin-bottom: 12px;
+      }
+      .success-box h3 {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 26px;
+        letter-spacing: 2px;
+        color: var(--success);
+        margin-bottom: 8px;
+      }
+      .success-box p {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      .summary {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin: 16px 0;
+        text-align: left;
+        font-size: 14px;
+        line-height: 2;
+      }
+      .summary span {
+        color: var(--accent);
+        font-weight: 600;
+      }
+      .btn-nuevo {
+        margin-top: 12px;
+        background: transparent;
+        border: 1.5px solid var(--success);
+        color: var(--success);
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 10px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .btn-nuevo:hover {
+        background: rgba(0, 200, 150, 0.1);
+      }
 
-    .error-msg{color:#ff6b6b;font-size:12px;margin-top:6px;display:none}
-    .has-error input,.has-error select{border-color:#ff6b6b!important}
+      .error-msg {
+        color: #ff6b6b;
+        font-size: 12px;
+        margin-top: 6px;
+        display: none;
+      }
+      .has-error input,
+      .has-error select {
+        border-color: #ff6b6b !important;
+      }
 
-    /* ===== GRILLA DE HORARIOS ===== */
-    #horarioView{display:none;animation:fadeUp .5s ease both}
-    .horario-header{text-align:center;margin-bottom:28px}
-    .horario-header h2{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:4px;
-      background:linear-gradient(135deg,#fff,var(--accent));
-      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .horario-header p{color:var(--muted);font-size:13px;margin-top:6px}
+      /* ===== GRILLA DE HORARIOS ===== */
+      #horarioView {
+        display: none;
+        animation: fadeUp 0.5s ease both;
+      }
+      .horario-header {
+        text-align: center;
+        margin-bottom: 28px;
+      }
+      .horario-header h2 {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 36px;
+        letter-spacing: 4px;
+        background: linear-gradient(135deg, #fff, var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .horario-header p {
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 6px;
+      }
 
-    /* Leyenda disciplinas */
-    .leyenda{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
-    .ley-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.5px}
-    .ley-dot{width:10px;height:10px;border-radius:50%}
+      /* Leyenda disciplinas */
+      .leyenda {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      .ley-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+      .ley-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
 
-    /* Tabla grilla */
-    .grilla-wrap{overflow-x:auto;border-radius:16px;border:1px solid var(--border);
-      box-shadow:0 8px 40px rgba(0,0,0,0.4)}
-    table.grilla{width:100%;border-collapse:collapse;min-width:500px}
-    table.grilla thead tr{background:rgba(0,229,255,0.05);border-bottom:1px solid var(--border)}
-    table.grilla thead th{padding:14px 10px;text-align:center;font-size:11px;font-weight:700;
-      letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
-    table.grilla thead th:first-child{text-align:left;padding-left:20px;width:80px}
-    table.grilla tbody tr{border-bottom:1px solid rgba(255,255,255,0.04)}
-    table.grilla tbody tr:last-child{border-bottom:none}
-    table.grilla tbody td{padding:10px 8px;vertical-align:top;text-align:center}
-    table.grilla tbody td:first-child{padding-left:20px;text-align:left;font-family:'Bebas Neue',sans-serif;
-      font-size:18px;letter-spacing:2px;color:var(--muted);vertical-align:middle;white-space:nowrap}
+      /* Tabla grilla */
+      .grilla-wrap {
+        overflow-x: auto;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 40px rgba(15, 12, 12, 0.4);
+      }
+      table.grilla {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 500px;
+      }
+      table.grilla thead tr {
+        background: rgba(0, 229, 255, 0.05);
+        border-bottom: 1px solid var(--border);
+      }
+      table.grilla thead th {
+        padding: 14px 10px;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      table.grilla thead th:first-child {
+        text-align: left;
+        padding-left: 20px;
+        width: 80px;
+      }
+      table.grilla tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      table.grilla tbody tr:last-child {
+        border-bottom: none;
+      }
+      table.grilla tbody td {
+        padding: 10px 8px;
+        vertical-align: top;
+        text-align: center;
+      }
+      table.grilla tbody td:first-child {
+        padding-left: 20px;
+        text-align: left;
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 18px;
+        letter-spacing: 2px;
+        color: var(--muted);
+        vertical-align: middle;
+        white-space: nowrap;
+      }
 
-    .celda{min-height:44px;display:flex;flex-direction:column;gap:4px;justify-content:center;align-items:center}
-    .alumno-chip{
-      display:inline-flex;align-items:center;gap:5px;
-      padding:4px 9px;border-radius:20px;font-size:11px;font-weight:600;
-      white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;
-    }
-    .chip-yoga    {background:rgba(0,229,255,0.13);color:var(--yoga);border:1px solid rgba(0,229,255,0.25)}
-    .chip-silla   {background:rgba(192,132,252,0.13);color:var(--silla);border:1px solid rgba(192,132,252,0.25)}
-    .chip-kundalini{background:rgba(251,146,60,0.13);color:var(--kund);border:1px solid rgba(251,146,60,0.25)}
-    .celda-vacia{color:var(--border);font-size:18px}
+      .celda {
+        min-height: 44px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        justify-content: center;
+        align-items: center;
+      }
+      .alumno-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .chip-yoga {
+        background: rgba(0, 229, 255, 0.13);
+        color: var(--yoga);
+        border: 1px solid rgba(0, 229, 255, 0.25);
+      }
+      .chip-silla {
+        background: rgba(192, 132, 252, 0.13);
+        color: var(--silla);
+        border: 1px solid rgba(192, 132, 252, 0.25);
+      }
+      .chip-kundalini {
+        background: rgba(251, 146, 60, 0.13);
+        color: var(--kund);
+        border: 1px solid rgba(251, 146, 60, 0.25);
+      }
+      .celda-vacia {
+        color: var(--border);
+        font-size: 18px;
+      }
 
-    .buscar-wrap{max-width:340px;margin:0 auto 24px;position:relative}
-    .buscar-wrap input{padding-left:38px;font-size:14px}
-    .buscar-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;pointer-events:none}
-    .highlight{background:rgba(255,220,0,0.25)!important;border-color:rgba(255,220,0,0.5)!important;color:#ffe066!important}
+      .buscar-wrap {
+        max-width: 340px;
+        margin: 0 auto 24px;
+        position: relative;
+      }
+      .buscar-wrap input {
+        padding-left: 38px;
+        font-size: 14px;
+      }
+      .buscar-icon {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--muted);
+        font-size: 15px;
+        pointer-events: none;
+      }
+      .highlight {
+        background: rgba(255, 220, 0, 0.25) !important;
+        border-color: rgba(255, 220, 0, 0.5) !important;
+        color: #ffe066 !important;
+      }
 
-    /* ===== ADMIN ===== */
-    #adminPanel{display:none;animation:fadeUp .5s ease both}
-    .admin-header{background:var(--card);border:1px solid var(--border);border-radius:16px;
-      padding:22px 26px;margin-bottom:20px;display:flex;align-items:center;
-      justify-content:space-between;flex-wrap:wrap;gap:14px;box-shadow:0 8px 40px rgba(0,0,0,0.3)}
-    .admin-header h2{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--accent)}
-    .admin-header p{color:var(--muted);font-size:13px;margin-top:2px}
-    .admin-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .btn-excel{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;
-      background:linear-gradient(135deg,#1d6f42,#2a9d5c);color:#fff;border:none;cursor:pointer;
-      font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
-      transition:transform .15s,box-shadow .2s;box-shadow:0 4px 16px rgba(0,150,70,0.3)}
-    .btn-excel:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,150,70,0.4)}
-    .btn-clear{padding:10px 18px;border-radius:10px;background:rgba(255,77,109,0.1);
-      color:var(--danger);border:1.5px solid var(--danger);cursor:pointer;
-      font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;transition:background .2s}
-    .btn-clear:hover{background:rgba(255,77,109,0.2)}
-    .filters{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-    .filters select{flex:1;min-width:140px;font-size:13px;padding:10px 14px}
-    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
-    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
-    .stat-card .num{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:var(--accent)}
-    .stat-card .lbl{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-    .table-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;
-      overflow:hidden;overflow-x:auto;box-shadow:0 8px 40px rgba(0,0,0,0.3)}
-    table.lista{width:100%;border-collapse:collapse;font-size:13px;min-width:520px}
-    table.lista thead tr{background:rgba(0,229,255,0.06);border-bottom:1px solid var(--border)}
-    table.lista thead th{padding:14px 16px;text-align:left;font-size:10px;font-weight:700;
-      letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
-    table.lista tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:background .15s}
-    table.lista tbody tr:last-child{border-bottom:none}
-    table.lista tbody tr:hover{background:rgba(255,255,255,0.03)}
-    table.lista tbody td{padding:13px 16px;color:var(--text);vertical-align:middle}
-    .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
-    .pill-yoga{background:rgba(0,229,255,0.12);color:var(--yoga)}
-    .pill-silla{background:rgba(180,100,255,0.15);color:var(--silla)}
-    .pill-kundalini{background:rgba(255,140,0,0.15);color:var(--kund)}
-    .btn-del{background:transparent;border:none;cursor:pointer;color:var(--muted);
-      font-size:16px;padding:4px 8px;border-radius:6px;transition:color .2s,background .2s}
-    .btn-del:hover{color:var(--danger);background:rgba(255,77,109,0.1)}
-    .empty-state{text-align:center;padding:50px 20px;color:var(--muted)}
-    .empty-state .big{font-size:40px;margin-bottom:12px}
-    .empty-state p{font-size:14px}
+      /* ===== ADMIN ===== */
+      #adminPanel {
+        display: none;
+        animation: fadeUp 0.5s ease both;
+      }
+      .admin-header {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 22px 26px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+      }
+      .admin-header h2 {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 26px;
+        letter-spacing: 3px;
+        color: var(--accent);
+      }
+      .admin-header p {
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 2px;
+      }
+      .admin-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .btn-excel {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #1d6f42, #2a9d5c);
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        transition:
+          transform 0.15s,
+          box-shadow 0.2s;
+        box-shadow: 0 4px 16px rgba(0, 150, 70, 0.3);
+      }
+      .btn-excel:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(0, 150, 70, 0.4);
+      }
+      .btn-clear {
+        padding: 10px 18px;
+        border-radius: 10px;
+        background: rgba(255, 77, 109, 0.1);
+        color: var(--danger);
+        border: 1.5px solid var(--danger);
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .btn-clear:hover {
+        background: rgba(255, 77, 109, 0.2);
+      }
+      .filters {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .filters select {
+        flex: 1;
+        min-width: 140px;
+        font-size: 13px;
+        padding: 10px 14px;
+      }
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+      }
+      .stat-card .num {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 32px;
+        letter-spacing: 2px;
+        color: var(--accent);
+      }
+      .stat-card .lbl {
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-top: 2px;
+      }
+      .table-wrap {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        overflow-x: auto;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+      }
+      table.lista {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        min-width: 520px;
+      }
+      table.lista thead tr {
+        background: rgba(0, 229, 255, 0.06);
+        border-bottom: 1px solid var(--border);
+      }
+      table.lista thead th {
+        padding: 14px 16px;
+        text-align: left;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      table.lista tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        transition: background 0.15s;
+      }
+      table.lista tbody tr:last-child {
+        border-bottom: none;
+      }
+      table.lista tbody tr:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      table.lista tbody td {
+        padding: 13px 16px;
+        color: var(--text);
+        vertical-align: middle;
+      }
+      .pill {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .pill-yoga {
+        background: rgba(0, 229, 255, 0.12);
+        color: var(--yoga);
+      }
+      .pill-silla {
+        background: rgba(180, 100, 255, 0.15);
+        color: var(--silla);
+      }
+      .pill-kundalini {
+        background: rgba(255, 140, 0, 0.15);
+        color: var(--kund);
+      }
+      .btn-del {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 16px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        transition:
+          color 0.2s,
+          background 0.2s;
+      }
+      .btn-del:hover {
+        color: var(--danger);
+        background: rgba(255, 77, 109, 0.1);
+      }
+      .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        color: var(--muted);
+      }
+      .empty-state .big {
+        font-size: 40px;
+        margin-bottom: 12px;
+      }
+      .empty-state p {
+        font-size: 14px;
+      }
 
-    @keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes fadeUp  {from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)}}
+      @keyframes fadeDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-    @media(max-width:520px){
-      .card{padding:22px 16px}
-      .name-row{grid-template-columns:1fr}
-      .admin-header{flex-direction:column;align-items:flex-start}
-      .stats-row{grid-template-columns:repeat(3,1fr)}
-    }
-  </style>
-</head>
-<body>
-<div class="container">
+      @media (max-width: 520px) {
+        .card {
+          padding: 22px 16px;
+        }
+        .name-row {
+          grid-template-columns: 1fr;
+        }
+        .admin-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .stats-row {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">
+        <div class="badge">🪷 Sat Nam Yoga Studio</div>
+        <h1>SAT NAM YOGA STUDIO</h1>
+      </div>
 
-  <div class="logo">
-    <div class="badge">🪷 Sat Nam Yoga Studio</div>
-    <h1>SAT NAM YOGA STUDIO</h1>
-  </div>
+      <div class="topnav">
+        <button class="tab-btn active" onclick="showTab('form')">
+          🧘 Inscripción
+        </button>
+        <button class="tab-btn" onclick="showTab('horario')">
+          📅 Horarios
+        </button>
+        <button class="tab-btn" onclick="showTab('admin')">
+          📋 Administrar
+        </button>
+      </div>
 
-  <div class="topnav">
-    <button class="tab-btn active" onclick="showTab('form')">🧘 Inscripción</button>
-    <button class="tab-btn" onclick="showTab('horario')">📅 Horarios</button>
-    <button class="tab-btn" onclick="showTab('admin')">📋 Administrar</button>
-  </div>
-
-  <!-- ===== FORMULARIO ===== -->
-  <div id="formView">
-    <div class="card" id="formCard">
-      <div class="field-group">
-        <div class="step"><div class="step-num">1</div><label>Tus datos</label></div>
-        <div class="name-row" style="margin-top:12px">
-          <div id="wrap-nombre">
-            <input type="text" id="nombre" placeholder="Nombre" autocomplete="off"/>
-            <div class="error-msg" id="err-nombre">Ingresá tu nombre</div>
+      <!-- ===== FORMULARIO ===== -->
+      <div id="formView">
+        <div class="card" id="formCard">
+          <div class="field-group">
+            <div class="step">
+              <div class="step-num">1</div>
+              <label>Tus datos</label>
+            </div>
+            <div class="name-row" style="margin-top: 12px">
+              <div id="wrap-nombre">
+                <input
+                  type="text"
+                  id="nombre"
+                  placeholder="Nombre"
+                  autocomplete="off"
+                />
+                <div class="error-msg" id="err-nombre">Ingresá tu nombre</div>
+              </div>
+              <div id="wrap-apellido">
+                <input
+                  type="text"
+                  id="apellido"
+                  placeholder="Apellido"
+                  autocomplete="off"
+                />
+                <div class="error-msg" id="err-apellido">
+                  Ingresá tu apellido
+                </div>
+              </div>
+            </div>
           </div>
-          <div id="wrap-apellido">
-            <input type="text" id="apellido" placeholder="Apellido" autocomplete="off"/>
-            <div class="error-msg" id="err-apellido">Ingresá tu apellido</div>
+
+          <div class="divider"></div>
+
+          <div class="field-group">
+            <div class="step">
+              <div class="step-num">2</div>
+              <label>Disciplina</label>
+            </div>
+            <div class="disciplines-grid" style="margin-top: 12px">
+              <div class="disc-option">
+                <input type="radio" name="disciplina" id="d1" value="Yoga" />
+                <label for="d1"><span class="icon">🧘</span>Yoga</label>
+              </div>
+              <div class="disc-option">
+                <input
+                  type="radio"
+                  name="disciplina"
+                  id="d2"
+                  value="Yoga en Silla"
+                />
+                <label for="d2"
+                  ><span class="icon">🪑</span>Yoga en Silla</label
+                >
+              </div>
+              <div class="disc-option">
+                <input
+                  type="radio"
+                  name="disciplina"
+                  id="d3"
+                  value="Kundalini"
+                />
+                <label for="d3"><span class="icon">🔥</span>Kundalini</label>
+              </div>
+            </div>
+            <div class="error-msg" id="err-disciplina" style="margin-top: 8px">
+              Seleccioná una disciplina
+            </div>
           </div>
+
+          <div class="divider"></div>
+
+          <div class="field-group" style="margin-bottom: 30px">
+            <div class="step">
+              <div class="step-num">3</div>
+              <label>Día y horario</label>
+            </div>
+            <div class="schedule-grid">
+              <div id="wrap-dia">
+                <select id="dia">
+                  <option value="" disabled selected>— Día —</option>
+                  <option>Lunes</option>
+                  <option>Martes</option>
+                  <option>Miércoles</option>
+                  <option>Jueves</option>
+                  <option>Viernes</option>
+                  <option>Sábado</option>
+                </select>
+                <div class="error-msg" id="err-dia">Elegí un día</div>
+              </div>
+              <div id="wrap-hora">
+                <select id="hora">
+                  <option value="" disabled selected>— Hora —</option>
+                  <option>08:30</option>
+                  <option>09:00</option>
+                  <option>10:00</option>
+                  <option>11:00</option>
+                  <option>14:00</option>
+                  <option>15:00</option>
+                  <option>16:00</option>
+                  <option>17:00</option>
+                  <option>18:00</option>
+                  <option>19:00</option>
+                  <option>20:00</option>
+                </select>
+                <div class="error-msg" id="err-hora">Elegí una hora</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-submit" onclick="inscribir()">
+            CONFIRMAR INSCRIPCIÓN
+          </button>
+        </div>
+
+        <div class="success-box" id="successBox">
+          <div class="checkmark">🎉</div>
+          <h3>¡Inscripción Confirmada!</h3>
+          <div class="summary" id="summaryText"></div>
+          <p>Tu lugar está reservado. ¡Namaste, nos vemos en clase! 🙏</p>
+          <button class="btn-nuevo" onclick="nuevo()">
+            Inscribir otro alumno
+          </button>
         </div>
       </div>
 
-      <div class="divider"></div>
+      <!-- ===== GRILLA HORARIOS ===== -->
+      <div id="horarioView">
+        <div class="horario-header">
+          <h2>📅 Grilla Semanal</h2>
+          <p>Encontrá tu nombre en el horario que elegiste</p>
+        </div>
 
-      <div class="field-group">
-        <div class="step"><div class="step-num">2</div><label>Disciplina</label></div>
-        <div class="disciplines-grid" style="margin-top:12px">
-          <div class="disc-option">
-            <input type="radio" name="disciplina" id="d1" value="Yoga"/>
-            <label for="d1"><span class="icon">🧘</span>Yoga</label>
+        <div class="leyenda">
+          <div class="ley-item">
+            <div class="ley-dot" style="background: var(--yoga)"></div>
+            <span style="color: var(--yoga)">Yoga</span>
           </div>
-          <div class="disc-option">
-            <input type="radio" name="disciplina" id="d2" value="Yoga en Silla"/>
-            <label for="d2"><span class="icon">🪑</span>Yoga en Silla</label>
+          <div class="ley-item">
+            <div class="ley-dot" style="background: var(--silla)"></div>
+            <span style="color: var(--silla)">Yoga en Silla</span>
           </div>
-          <div class="disc-option">
-            <input type="radio" name="disciplina" id="d3" value="Kundalini"/>
-            <label for="d3"><span class="icon">🔥</span>Kundalini</label>
+          <div class="ley-item">
+            <div class="ley-dot" style="background: var(--kund)"></div>
+            <span style="color: var(--kund)">Kundalini</span>
           </div>
         </div>
-        <div class="error-msg" id="err-disciplina" style="margin-top:8px">Seleccioná una disciplina</div>
-      </div>
 
-      <div class="divider"></div>
+        <div class="buscar-wrap">
+          <span class="buscar-icon">🔍</span>
+          <input
+            type="text"
+            id="buscarNombre"
+            placeholder="Buscá tu nombre..."
+            oninput="renderGrilla()"
+          />
+        </div>
 
-      <div class="field-group" style="margin-bottom:30px">
-        <div class="step"><div class="step-num">3</div><label>Día y horario</label></div>
-        <div class="schedule-grid">
-          <div id="wrap-dia">
-            <select id="dia">
-              <option value="" disabled selected>— Día —</option>
-              <option>Lunes</option><option>Martes</option><option>Miércoles</option>
-              <option>Jueves</option><option>Viernes</option><option>Sábado</option>
-            </select>
-            <div class="error-msg" id="err-dia">Elegí un día</div>
-          </div>
-          <div id="wrap-hora">
-            <select id="hora">
-              <option value="" disabled selected>— Hora —</option>
-              <option>08:30</option><option>09:00</option><option>10:00</option>
-              <option>11:00</option><option>14:00</option><option>15:00</option>
-              <option>16:00</option><option>17:00</option><option>18:00</option>
-              <option>19:00</option><option>20:00</option>
-            </select>
-            <div class="error-msg" id="err-hora">Elegí una hora</div>
-          </div>
+        <div class="grilla-wrap">
+          <table class="grilla" id="tablaGrilla"></table>
         </div>
       </div>
 
-      <button class="btn-submit" onclick="inscribir()">CONFIRMAR INSCRIPCIÓN</button>
-    </div>
+      <!-- ===== ADMIN ===== -->
+      <div id="adminPanel">
+        <div class="admin-header">
+          <div>
+            <h2>📋 Alumnos Inscriptos</h2>
+            <p>Sat Nam Yoga Studio</p>
+          </div>
+          <div class="admin-actions">
+            <button class="btn-excel" onclick="exportarExcel()">
+              📊 Exportar a Excel
+            </button>
+            <button class="btn-clear" onclick="limpiarTodo()">
+              🗑 Borrar todo
+            </button>
+          </div>
+        </div>
 
-    <div class="success-box" id="successBox">
-      <div class="checkmark">🎉</div>
-      <h3>¡Inscripción Confirmada!</h3>
-      <div class="summary" id="summaryText"></div>
-      <p>Tu lugar está reservado. ¡Namaste, nos vemos en clase! 🙏</p>
-      <button class="btn-nuevo" onclick="nuevo()">Inscribir otro alumno</button>
-    </div>
-  </div>
+        <div class="stats-row" id="statsRow"></div>
 
-  <!-- ===== GRILLA HORARIOS ===== -->
-  <div id="horarioView">
-    <div class="horario-header">
-      <h2>📅 Grilla Semanal</h2>
-      <p>Encontrá tu nombre en el horario que elegiste</p>
-    </div>
+        <div class="filters">
+          <select id="filtroDisc" onchange="renderTabla()">
+            <option value="">Todas las disciplinas</option>
+            <option>Yoga</option>
+            <option>Yoga en Silla</option>
+            <option>Kundalini</option>
+          </select>
+          <select id="filtroDia" onchange="renderTabla()">
+            <option value="">Todos los días</option>
+            <option>Lunes</option>
+            <option>Martes</option>
+            <option>Miércoles</option>
+            <option>Jueves</option>
+            <option>Viernes</option>
+            <option>Sábado</option>
+          </select>
+        </div>
 
-    <div class="leyenda">
-      <div class="ley-item"><div class="ley-dot" style="background:var(--yoga)"></div><span style="color:var(--yoga)">Yoga</span></div>
-      <div class="ley-item"><div class="ley-dot" style="background:var(--silla)"></div><span style="color:var(--silla)">Yoga en Silla</span></div>
-      <div class="ley-item"><div class="ley-dot" style="background:var(--kund)"></div><span style="color:var(--kund)">Kundalini</span></div>
-    </div>
-
-    <div class="buscar-wrap">
-      <span class="buscar-icon">🔍</span>
-      <input type="text" id="buscarNombre" placeholder="Buscá tu nombre..." oninput="renderGrilla()"/>
-    </div>
-
-    <div class="grilla-wrap">
-      <table class="grilla" id="tablaGrilla"></table>
-    </div>
-  </div>
-
-  <!-- ===== ADMIN ===== -->
-  <div id="adminPanel">
-    <div class="admin-header">
-      <div>
-        <h2>📋 Alumnos Inscriptos</h2>
-        <p>Sat Nam Yoga Studio</p>
-      </div>
-      <div class="admin-actions">
-        <button class="btn-excel" onclick="exportarExcel()">📊 Exportar a Excel</button>
-        <button class="btn-clear" onclick="limpiarTodo()">🗑 Borrar todo</button>
-      </div>
-    </div>
-
-    <div class="stats-row" id="statsRow"></div>
-
-    <div class="filters">
-      <select id="filtroDisc" onchange="renderTabla()">
-        <option value="">Todas las disciplinas</option>
-        <option>Yoga</option><option>Yoga en Silla</option><option>Kundalini</option>
-      </select>
-      <select id="filtroDia" onchange="renderTabla()">
-        <option value="">Todos los días</option>
-        <option>Lunes</option><option>Martes</option><option>Miércoles</option>
-        <option>Jueves</option><option>Viernes</option><option>Sábado</option>
-      </select>
-    </div>
-
-    <div class="table-wrap">
-      <table class="lista">
-        <thead>
-          <tr><th>#</th><th>Nombre</th><th>Apellido</th><th>Disciplina</th><th>Día</th><th>Hora</th><th>Inscripción</th><th></th></tr>
-        </thead>
-        <tbody id="tablaBody"></tbody>
-      </table>
-      <div class="empty-state" id="emptyState" style="display:none">
-        <div class="big">🧘</div>
-        <p>Todavía no hay inscriptos.<br>¡Compartí el formulario!</p>
+        <div class="table-wrap">
+          <table class="lista">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Disciplina</th>
+                <th>Día</th>
+                <th>Hora</th>
+                <th>Inscripción</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tablaBody"></tbody>
+          </table>
+          <div class="empty-state" id="emptyState" style="display: none">
+            <div class="big">🧘</div>
+            <p>Todavía no hay inscriptos.<br />¡Compartí el formulario!</p>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+    <script>
+      const KEY = "satnam_inscriptos";
+      const getA = () => {
+        try {
+          return JSON.parse(localStorage.getItem(KEY)) || [];
+        } catch {
+          return [];
+        }
+      };
+      const saveA = (a) => localStorage.setItem(KEY, JSON.stringify(a));
 
-</div>
-<script>
-  const KEY = 'satnam_inscriptos';
-  const getA = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; } };
-  const saveA = a => localStorage.setItem(KEY, JSON.stringify(a));
+      const DIAS = [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+      ];
+      const HORAS = [
+        "08:30",
+        "09:00",
+        "10:00",
+        "11:00",
+        "14:00",
+        "15:00",
+        "16:00",
+        "17:00",
+        "18:00",
+        "19:00",
+        "20:00",
+      ];
 
-  const DIAS  = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  const HORAS = ['08:30','09:00','10:00','11:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
+      function showTab(tab) {
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b, i) =>
+            b.classList.toggle(
+              "active",
+              ["form", "horario", "admin"][i] === tab,
+            ),
+          );
+        document.getElementById("formView").style.display =
+          tab === "form" ? "block" : "none";
+        document.getElementById("horarioView").style.display =
+          tab === "horario" ? "block" : "none";
+        document.getElementById("adminPanel").style.display =
+          tab === "admin" ? "block" : "none";
+        if (tab === "horario") renderGrilla();
+        if (tab === "admin") {
+          renderStats();
+          renderTabla();
+        }
+      }
 
-  function showTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach((b,i) =>
-      b.classList.toggle('active', ['form','horario','admin'][i] === tab));
-    document.getElementById('formView').style.display    = tab==='form'    ? 'block':'none';
-    document.getElementById('horarioView').style.display = tab==='horario' ? 'block':'none';
-    document.getElementById('adminPanel').style.display  = tab==='admin'   ? 'block':'none';
-    if (tab==='horario') renderGrilla();
-    if (tab==='admin')   { renderStats(); renderTabla(); }
-  }
+      /* ---- FORMULARIO ---- */
+      function inscribir() {
+        const nombre = document.getElementById("nombre").value.trim();
+        const apellido = document.getElementById("apellido").value.trim();
+        const disciplina = document.querySelector(
+          'input[name="disciplina"]:checked',
+        );
+        const dia = document.getElementById("dia").value;
+        const hora = document.getElementById("hora").value;
+        let ok = true;
+        showErr("wrap-nombre", "err-nombre", !nombre);
+        if (!nombre) ok = false;
+        showErr("wrap-apellido", "err-apellido", !apellido);
+        if (!apellido) ok = false;
+        document.getElementById("err-disciplina").style.display = !disciplina
+          ? "block"
+          : "none";
+        if (!disciplina) ok = false;
+        showErr("wrap-dia", "err-dia", !dia);
+        if (!dia) ok = false;
+        showErr("wrap-hora", "err-hora", !hora);
+        if (!hora) ok = false;
+        if (!ok) return;
 
-  /* ---- FORMULARIO ---- */
-  function inscribir() {
-    const nombre     = document.getElementById('nombre').value.trim();
-    const apellido   = document.getElementById('apellido').value.trim();
-    const disciplina = document.querySelector('input[name="disciplina"]:checked');
-    const dia        = document.getElementById('dia').value;
-    const hora       = document.getElementById('hora').value;
-    let ok = true;
-    showErr('wrap-nombre',  'err-nombre',   !nombre);   if(!nombre) ok=false;
-    showErr('wrap-apellido','err-apellido', !apellido); if(!apellido) ok=false;
-    document.getElementById('err-disciplina').style.display = !disciplina?'block':'none';
-    if(!disciplina) ok=false;
-    showErr('wrap-dia', 'err-dia', !dia);   if(!dia) ok=false;
-    showErr('wrap-hora','err-hora',!hora);  if(!hora) ok=false;
-    if(!ok) return;
+        const alumno = {
+          id: Date.now(),
+          nombre,
+          apellido,
+          disciplina: disciplina.value,
+          dia,
+          hora,
+          fecha: new Date().toLocaleDateString("es-AR"),
+        };
+        const lista = getA();
+        lista.push(alumno);
+        saveA(lista);
 
-    const alumno = { id:Date.now(), nombre, apellido, disciplina:disciplina.value, dia, hora,
-      fecha:new Date().toLocaleDateString('es-AR') };
-    const lista = getA(); lista.push(alumno); saveA(lista);
+        document.getElementById("summaryText").innerHTML =
+          `👤 <span>${nombre} ${apellido}</span><br>🏅 <span>${disciplina.value}</span><br>📅 <span>${dia}</span> &nbsp;•&nbsp; ⏰ <span>${hora} hs</span>`;
+        document.getElementById("formCard").style.display = "none";
+        document.getElementById("successBox").style.display = "block";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      function showErr(wId, eId, show) {
+        document.getElementById(wId).classList.toggle("has-error", show);
+        document.getElementById(eId).style.display = show ? "block" : "none";
+      }
+      function nuevo() {
+        ["nombre", "apellido"].forEach(
+          (id) => (document.getElementById(id).value = ""),
+        );
+        document
+          .querySelectorAll('input[name="disciplina"]')
+          .forEach((r) => (r.checked = false));
+        document.getElementById("dia").value = "";
+        document.getElementById("hora").value = "";
+        document.getElementById("successBox").style.display = "none";
+        document.getElementById("formCard").style.display = "block";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
 
-    document.getElementById('summaryText').innerHTML =
-      `👤 <span>${nombre} ${apellido}</span><br>🏅 <span>${disciplina.value}</span><br>📅 <span>${dia}</span> &nbsp;•&nbsp; ⏰ <span>${hora} hs</span>`;
-    document.getElementById('formCard').style.display = 'none';
-    document.getElementById('successBox').style.display = 'block';
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
-  function showErr(wId,eId,show) {
-    document.getElementById(wId).classList.toggle('has-error',show);
-    document.getElementById(eId).style.display=show?'block':'none';
-  }
-  function nuevo() {
-    ['nombre','apellido'].forEach(id=>document.getElementById(id).value='');
-    document.querySelectorAll('input[name="disciplina"]').forEach(r=>r.checked=false);
-    document.getElementById('dia').value=''; document.getElementById('hora').value='';
-    document.getElementById('successBox').style.display='none';
-    document.getElementById('formCard').style.display='block';
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
+      /* ---- GRILLA ---- */
+      function chipClass(d) {
+        if (d === "Yoga") return "chip-yoga";
+        if (d === "Yoga en Silla") return "chip-silla";
+        return "chip-kundalini";
+      }
+      function discIcon(d) {
+        if (d === "Yoga") return "🧘";
+        if (d === "Yoga en Silla") return "🪑";
+        return "🔥";
+      }
 
-  /* ---- GRILLA ---- */
-  function chipClass(d) {
-    if(d==='Yoga') return 'chip-yoga';
-    if(d==='Yoga en Silla') return 'chip-silla';
-    return 'chip-kundalini';
-  }
-  function discIcon(d) {
-    if(d==='Yoga') return '🧘';
-    if(d==='Yoga en Silla') return '🪑';
-    return '🔥';
-  }
+      function renderGrilla() {
+        const alumnos = getA();
+        const buscar = (document.getElementById("buscarNombre").value || "")
+          .toLowerCase()
+          .trim();
 
-  function renderGrilla() {
-    const alumnos = getA();
-    const buscar  = (document.getElementById('buscarNombre').value || '').toLowerCase().trim();
-
-    // Filtrar horas que tienen al menos un alumno
-    const horasActivas = HORAS.filter(h => alumnos.some(a => a.hora === h));
-    if(horasActivas.length === 0) {
-      document.getElementById('tablaGrilla').innerHTML =
-        `<tbody><tr><td colspan="${DIAS.length+1}" style="padding:50px;text-align:center;color:var(--muted)">
+        // Filtrar horas que tienen al menos un alumno
+        const horasActivas = HORAS.filter((h) =>
+          alumnos.some((a) => a.hora === h),
+        );
+        if (horasActivas.length === 0) {
+          document.getElementById("tablaGrilla").innerHTML =
+            `<tbody><tr><td colspan="${DIAS.length + 1}" style="padding:50px;text-align:center;color:var(--muted)">
           <div style="font-size:36px;margin-bottom:12px">🧘</div>
           <div style="font-size:14px">Todavía no hay inscriptos.<br>¡Completá el formulario de inscripción!</div>
         </td></tr></tbody>`;
-      return;
-    }
+          return;
+        }
 
-    let html = '<thead><tr><th>Hora</th>';
-    DIAS.forEach(d => { html += `<th>${d}</th>`; });
-    html += '</tr></thead><tbody>';
+        let html = "<thead><tr><th>Hora</th>";
+        DIAS.forEach((d) => {
+          html += `<th>${d}</th>`;
+        });
+        html += "</tr></thead><tbody>";
 
-    horasActivas.forEach(hora => {
-      html += `<tr><td>${hora}</td>`;
-      DIAS.forEach(dia => {
-        const en = alumnos.filter(a => a.hora===hora && a.dia===dia);
-        if(en.length === 0) {
-          html += `<td><div class="celda"><span class="celda-vacia">·</span></div></td>`;
-        } else {
-          html += `<td><div class="celda">`;
-          en.forEach(a => {
-            const nombre = `${a.nombre} ${a.apellido}`;
-            const isHit  = buscar && nombre.toLowerCase().includes(buscar);
-            html += `<span class="alumno-chip ${chipClass(a.disciplina)}${isHit?' highlight':''}" title="${a.disciplina}">
+        horasActivas.forEach((hora) => {
+          html += `<tr><td>${hora}</td>`;
+          DIAS.forEach((dia) => {
+            const en = alumnos.filter((a) => a.hora === hora && a.dia === dia);
+            if (en.length === 0) {
+              html += `<td><div class="celda"><span class="celda-vacia">·</span></div></td>`;
+            } else {
+              html += `<td><div class="celda">`;
+              en.forEach((a) => {
+                const nombre = `${a.nombre} ${a.apellido}`;
+                const isHit = buscar && nombre.toLowerCase().includes(buscar);
+                html += `<span class="alumno-chip ${chipClass(a.disciplina)}${isHit ? " highlight" : ""}" title="${a.disciplina}">
               ${discIcon(a.disciplina)} ${a.nombre} ${a.apellido}
             </span>`;
+              });
+              html += `</div></td>`;
+            }
           });
-          html += `</div></td>`;
-        }
-      });
-      html += '</tr>';
-    });
+          html += "</tr>";
+        });
 
-    html += '</tbody>';
-    document.getElementById('tablaGrilla').innerHTML = html;
-  }
+        html += "</tbody>";
+        document.getElementById("tablaGrilla").innerHTML = html;
+      }
 
-  /* ---- ADMIN ---- */
-  function renderStats() {
-    const a = getA();
-    document.getElementById('statsRow').innerHTML = `
+      /* ---- ADMIN ---- */
+      function renderStats() {
+        const a = getA();
+        document.getElementById("statsRow").innerHTML = `
       <div class="stat-card"><div class="num">${a.length}</div><div class="lbl">Total</div></div>
-      <div class="stat-card"><div class="num">${a.filter(x=>x.disciplina==='Yoga'||x.disciplina==='Yoga en Silla').length}</div><div class="lbl">Yoga / Silla</div></div>
-      <div class="stat-card"><div class="num">${a.filter(x=>x.disciplina==='Kundalini').length}</div><div class="lbl">Kundalini</div></div>`;
-  }
-  function renderTabla() {
-    const fd  = document.getElementById('filtroDisc').value;
-    const fdi = document.getElementById('filtroDia').value;
-    let a = getA();
-    if(fd)  a = a.filter(x=>x.disciplina===fd);
-    if(fdi) a = a.filter(x=>x.dia===fdi);
-    const pill = {'Yoga':'pill-yoga','Yoga en Silla':'pill-silla','Kundalini':'pill-kundalini'};
-    document.getElementById('emptyState').style.display = a.length===0?'block':'none';
-    document.getElementById('tablaBody').innerHTML = a.map((x,i)=>`
+      <div class="stat-card"><div class="num">${a.filter((x) => x.disciplina === "Yoga" || x.disciplina === "Yoga en Silla").length}</div><div class="lbl">Yoga / Silla</div></div>
+      <div class="stat-card"><div class="num">${a.filter((x) => x.disciplina === "Kundalini").length}</div><div class="lbl">Kundalini</div></div>`;
+      }
+      function renderTabla() {
+        const fd = document.getElementById("filtroDisc").value;
+        const fdi = document.getElementById("filtroDia").value;
+        let a = getA();
+        if (fd) a = a.filter((x) => x.disciplina === fd);
+        if (fdi) a = a.filter((x) => x.dia === fdi);
+        const pill = {
+          Yoga: "pill-yoga",
+          "Yoga en Silla": "pill-silla",
+          Kundalini: "pill-kundalini",
+        };
+        document.getElementById("emptyState").style.display =
+          a.length === 0 ? "block" : "none";
+        document.getElementById("tablaBody").innerHTML = a
+          .map(
+            (x, i) => `
       <tr>
-        <td style="color:var(--muted)">${i+1}</td>
+        <td style="color:var(--muted)">${i + 1}</td>
         <td>${x.nombre}</td><td>${x.apellido}</td>
-        <td><span class="pill ${pill[x.disciplina]||''}">${x.disciplina}</span></td>
+        <td><span class="pill ${pill[x.disciplina] || ""}">${x.disciplina}</span></td>
         <td>${x.dia}</td><td>${x.hora} hs</td>
         <td style="color:var(--muted);font-size:12px">${x.fecha}</td>
         <td><button class="btn-del" onclick="eliminar(${x.id})">✕</button></td>
-      </tr>`).join('');
-  }
-  function eliminar(id) {
-    if(!confirm('¿Eliminar este alumno?')) return;
-    saveA(getA().filter(a=>a.id!==id)); renderStats(); renderTabla();
-  }
-  function limpiarTodo() {
-    if(!confirm('¿Borrar TODOS los inscriptos? Esta acción no se puede deshacer.')) return;
-    saveA([]); renderStats(); renderTabla();
-  }
-  function exportarExcel() {
-    const a = getA();
-    if(!a.length){alert('No hay inscriptos para exportar.');return;}
-    const data=[['#','Nombre','Apellido','Disciplina','Día','Hora','Fecha de inscripción'],
-      ...a.map((x,i)=>[i+1,x.nombre,x.apellido,x.disciplina,x.dia,x.hora,x.fecha])];
-    const ws=XLSX.utils.aoa_to_sheet(data);
-    ws['!cols']=[{wch:5},{wch:16},{wch:16},{wch:16},{wch:12},{wch:8},{wch:22}];
-    const wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,ws,'Inscriptos');
-    XLSX.writeFile(wb,`SatNam_Inscriptos_${new Date().toLocaleDateString('es-AR').replace(/\//g,'-')}.xlsx`);
-  }
-</script>
-</body>
+      </tr>`,
+          )
+          .join("");
+      }
+      function eliminar(id) {
+        if (!confirm("¿Eliminar este alumno?")) return;
+        saveA(getA().filter((a) => a.id !== id));
+        renderStats();
+        renderTabla();
+      }
+      function limpiarTodo() {
+        if (
+          !confirm(
+            "¿Borrar TODOS los inscriptos? Esta acción no se puede deshacer.",
+          )
+        )
+          return;
+        saveA([]);
+        renderStats();
+        renderTabla();
+      }
+      function exportarExcel() {
+        const a = getA();
+        if (!a.length) {
+          alert("No hay inscriptos para exportar.");
+          return;
+        }
+        const data = [
+          [
+            "#",
+            "Nombre",
+            "Apellido",
+            "Disciplina",
+            "Día",
+            "Hora",
+            "Fecha de inscripción",
+          ],
+          ...a.map((x, i) => [
+            i + 1,
+            x.nombre,
+            x.apellido,
+            x.disciplina,
+            x.dia,
+            x.hora,
+            x.fecha,
+          ]),
+        ];
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        ws["!cols"] = [
+          { wch: 5 },
+          { wch: 16 },
+          { wch: 16 },
+          { wch: 16 },
+          { wch: 12 },
+          { wch: 8 },
+          { wch: 22 },
+        ];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Inscriptos");
+        XLSX.writeFile(
+          wb,
+          `SatNam_Inscriptos_${new Date().toLocaleDateString("es-AR").replace(/\//g, "-")}.xlsx`,
+        );
+      }
+    </script>
+  </body>
 </html>
