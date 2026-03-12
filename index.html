@@ -10,16 +10,16 @@
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-    <!-- FIREBASE -->
+    <!-- FIREBASE CDN -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
       import {
         getFirestore,
         collection,
         addDoc,
+        onSnapshot,
         deleteDoc,
         doc,
-        onSnapshot,
         query,
         orderBy,
       } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -31,16 +31,18 @@
         storageBucket: "sat-nam-yoga-vivi.firebasestorage.app",
         messagingSenderId: "91508436909",
         appId: "1:91508436909:web:76d9ebb093e8d6bf037b24",
+        measurementId: "G-TTGY58HK1P",
       };
 
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
+      const COL = "alumnos";
+
+      // Base de datos local sincronizada
       let alumnosDB = [];
 
-      const q = query(
-        collection(db, "inscriptos"),
-        orderBy("timestamp", "asc"),
-      );
+      // Escuchar cambios en tiempo real
+      const q = query(collection(db, COL), orderBy("timestamp", "asc"));
       onSnapshot(
         q,
         (snapshot) => {
@@ -48,61 +50,40 @@
             firestoreId: d.id,
             ...d.data(),
           }));
-          renderGrilla();
-          renderStats();
-          renderTabla();
-          document.getElementById("connDot").className = "conn-dot online";
+          // Actualizar dot de conexión
+          document.getElementById("connDot").classList.add("online");
+          document.getElementById("connDot").classList.remove("offline");
           document.getElementById("connTxt").textContent =
-            "En línea · tiempo real";
+            "Conectado a Firebase";
+          // Re-renderizar si las vistas están activas
+          if (
+            document.getElementById("horarioContent").style.display === "block"
+          )
+            renderGrilla();
+          if (
+            document.getElementById("adminContent").style.display === "block"
+          ) {
+            renderStats();
+            renderTabla();
+          }
         },
         (error) => {
-          document.getElementById("connDot").className = "conn-dot offline";
+          console.error(error);
+          document.getElementById("connDot").classList.add("offline");
+          document.getElementById("connDot").classList.remove("online");
           document.getElementById("connTxt").textContent = "Error de conexión";
         },
       );
 
-      window.inscribirFirebase = async (alumno) => {
-        await addDoc(collection(db, "inscriptos"), alumno);
-      };
-      window.eliminarFirebase = async (firestoreId) => {
-        await deleteDoc(doc(db, "inscriptos", firestoreId));
-      };
+      // Exponer funciones al scope global
       window.getAlumnosDB = () => alumnosDB;
 
-      window.exportarExcel = () => {
-        const a = alumnosDB;
-        if (!a.length) {
-          alert("No hay inscriptos para exportar.");
-          return;
-        }
-        const data = [
-          ["#", "Nombre", "Apellido", "Disciplina", "Día", "Hora", "Fecha"],
-          ...a.map((x, i) => [
-            i + 1,
-            x.nombre,
-            x.apellido,
-            x.disciplina,
-            x.dia,
-            x.hora,
-            x.fecha,
-          ]),
-        ];
-        const ws = XLSX.utils.aoa_to_sheet(data);
-        ws["!cols"] = [
-          { wch: 5 },
-          { wch: 16 },
-          { wch: 16 },
-          { wch: 20 },
-          { wch: 12 },
-          { wch: 8 },
-          { wch: 22 },
-        ];
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Inscriptos");
-        XLSX.writeFile(
-          wb,
-          `SatNam_Inscriptos_${new Date().toLocaleDateString("es-AR").replace(/\//g, "-")}.xlsx`,
-        );
+      window.inscribirFirebase = async (datos) => {
+        await addDoc(collection(db, COL), datos);
+      };
+
+      window.eliminarFirebase = async (id) => {
+        await deleteDoc(doc(db, COL, id));
       };
     </script>
 
@@ -124,9 +105,6 @@
         --border: #1e2d45;
         --success: #00c896;
         --danger: #ff4d6d;
-        --yoga: #00e5ff;
-        --silla: #c084fc;
-        --kund: #fb923c;
       }
       body {
         font-family: "DM Sans", sans-serif;
@@ -347,7 +325,7 @@
         color: var(--text);
       }
 
-      /* DISCIPLINAS GRID */
+      /* DISCIPLINAS */
       .disciplines-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -698,7 +676,7 @@
         color: #ffe066 !important;
       }
 
-      /* ADMIN PASSWORD OVERLAY */
+      /* LOCK */
       #adminLock {
         display: flex;
         flex-direction: column;
@@ -1029,7 +1007,11 @@
     <div class="container">
       <!-- LOGO -->
       <div class="logo">
-        <img src="assets/logosatnam.png" alt="Sat Nam Yoga Studio" />
+        <img
+          src="assets/logosatnam.png"
+          alt="Sat Nam Yoga Studio"
+          onerror="this.style.display = 'none'"
+        />
         <div class="badge">🪷 Sat Nam Yoga Studio</div>
         <h1>SAT NAM YOGA STUDIO</h1>
       </div>
@@ -1261,7 +1243,6 @@
 
       <!-- ===== GRILLA HORARIOS ===== -->
       <div id="horarioView">
-        <!-- PANTALLA DE CONTRASEÑA HORARIOS -->
         <div id="horarioLock">
           <div class="lock-card">
             <div class="lock-icon">🔐</div>
@@ -1283,8 +1264,6 @@
             </button>
           </div>
         </div>
-
-        <!-- CONTENIDO HORARIOS -->
         <div id="horarioContent">
           <div class="horario-header">
             <h2>📅 Grilla Semanal</h2>
@@ -1325,8 +1304,7 @@
       </div>
 
       <!-- ===== ADMIN ===== -->
-      <div id="adminPanel">
-        <!-- PANTALLA DE CONTRASEÑA -->
+      <div id="adminPanel" style="display: none">
         <div id="adminLock">
           <div class="lock-card">
             <div class="lock-icon">🔐</div>
@@ -1346,8 +1324,6 @@
             </button>
           </div>
         </div>
-
-        <!-- CONTENIDO ADMIN (oculto hasta autenticación) -->
         <div id="adminContent">
           <div class="admin-header">
             <div>
@@ -1366,7 +1342,6 @@
               </button>
             </div>
           </div>
-
           <div class="stats-row" id="statsRow">
             <div class="stat-card">
               <div class="num">—</div>
@@ -1385,7 +1360,6 @@
               <div class="lbl">Otras</div>
             </div>
           </div>
-
           <div class="filters">
             <select id="filtroDisc" onchange="renderTabla()">
               <option value="">Todas las disciplinas</option>
@@ -1408,7 +1382,6 @@
               <option>Sábado</option>
             </select>
           </div>
-
           <div class="table-wrap">
             <table class="lista">
               <thead>
@@ -1444,8 +1417,10 @@
     </div>
 
     <script>
-      const ADMIN_PASSWORD = "2207-";
+      const ADMIN_PASSWORD = "2207";
+      const HORARIO_PASSWORD = "2207";
       let adminAutenticado = false;
+      let horarioAutenticado = false;
 
       const DIAS = [
         "Lunes",
@@ -1468,7 +1443,6 @@
         "19:00",
         "20:00",
       ];
-
       const DISCIPLINAS = [
         { val: "Yoga (Vivi)", icon: "🧘", color: "chip-0" },
         { val: "Yoga en Silla", icon: "🪑", color: "chip-1" },
@@ -1489,44 +1463,18 @@
         );
       }
 
-      // Leyenda dinámica
       function buildLeyenda() {
         document.getElementById("leyendaBox").innerHTML = DISCIPLINAS.map(
           (d) =>
             `<div class="ley-item">
-        <div class="ley-dot" style="background:var(--accent);opacity:.7"></div>
-        <span style="color:var(--muted)">${d.icon} ${d.val}</span>
-      </div>`,
+            <div class="ley-dot" style="background:var(--accent);opacity:.7"></div>
+            <span style="color:var(--muted)">${d.icon} ${d.val}</span>
+          </div>`,
         ).join("");
       }
       buildLeyenda();
 
-      /* ---- ADMIN PASSWORD ---- */
-      function verificarPass() {
-        const pass = document.getElementById("adminPass").value;
-        if (pass === ADMIN_PASSWORD) {
-          adminAutenticado = true;
-          document.getElementById("adminLock").style.display = "none";
-          document.getElementById("adminContent").style.display = "block";
-          renderStats();
-          renderTabla();
-        } else {
-          document.getElementById("lockError").style.display = "block";
-          document.getElementById("adminPass").value = "";
-          document.getElementById("adminPass").focus();
-          setTimeout(() => {
-            document.getElementById("lockError").style.display = "none";
-          }, 2500);
-        }
-      }
-
-      function cerrarSesionAdmin() {
-        adminAutenticado = false;
-        document.getElementById("adminContent").style.display = "none";
-        document.getElementById("adminLock").style.display = "flex";
-        document.getElementById("adminPass").value = "";
-      }
-
+      /* ---- TABS ---- */
       function showTab(tab) {
         document
           .querySelectorAll(".tab-btn")
@@ -1542,11 +1490,66 @@
           tab === "horario" ? "block" : "none";
         document.getElementById("adminPanel").style.display =
           tab === "admin" ? "block" : "none";
-        if (tab === "horario") renderGrilla();
+        if (tab === "horario" && horarioAutenticado) renderGrilla();
         if (tab === "admin" && adminAutenticado) {
           renderStats();
           renderTabla();
         }
+      }
+      // Estado inicial
+      document.getElementById("formView").style.display = "block";
+      document.getElementById("horarioView").style.display = "none";
+      document.getElementById("adminPanel").style.display = "none";
+
+      /* ---- HORARIO LOCK ---- */
+      function verificarPassHorario() {
+        if (document.getElementById("horarioPass").value === HORARIO_PASSWORD) {
+          horarioAutenticado = true;
+          document.getElementById("horarioLock").style.display = "none";
+          document.getElementById("horarioContent").style.display = "block";
+          renderGrilla();
+        } else {
+          document.getElementById("lockErrorHorario").style.display = "block";
+          document.getElementById("horarioPass").value = "";
+          document.getElementById("horarioPass").focus();
+          setTimeout(
+            () =>
+              (document.getElementById("lockErrorHorario").style.display =
+                "none"),
+            2500,
+          );
+        }
+      }
+      function cerrarSesionHorario() {
+        horarioAutenticado = false;
+        document.getElementById("horarioContent").style.display = "none";
+        document.getElementById("horarioLock").style.display = "flex";
+        document.getElementById("horarioPass").value = "";
+      }
+
+      /* ---- ADMIN LOCK ---- */
+      function verificarPass() {
+        if (document.getElementById("adminPass").value === ADMIN_PASSWORD) {
+          adminAutenticado = true;
+          document.getElementById("adminLock").style.display = "none";
+          document.getElementById("adminContent").style.display = "block";
+          renderStats();
+          renderTabla();
+        } else {
+          document.getElementById("lockError").style.display = "block";
+          document.getElementById("adminPass").value = "";
+          document.getElementById("adminPass").focus();
+          setTimeout(
+            () => (document.getElementById("lockError").style.display = "none"),
+            2500,
+          );
+        }
+      }
+      function cerrarSesionAdmin() {
+        adminAutenticado = false;
+        document.getElementById("adminContent").style.display = "none";
+        document.getElementById("adminLock").style.display = "flex";
+        document.getElementById("adminPass").value = "";
       }
 
       /* ---- FORMULARIO ---- */
@@ -1592,7 +1595,11 @@
           document.getElementById("successBox").style.display = "block";
           window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (e) {
-          alert("Error al guardar. Verificá tu conexión e intentá de nuevo.");
+          console.error(e);
+          alert(
+            "Error al guardar. Verificá tu conexión e intentá de nuevo.\n\n" +
+              e.message,
+          );
         }
         btn.disabled = false;
         btn.textContent = "CONFIRMAR INSCRIPCIÓN";
@@ -1602,6 +1609,7 @@
         document.getElementById(wId).classList.toggle("has-error", show);
         document.getElementById(eId).style.display = show ? "block" : "none";
       }
+
       function nuevo() {
         ["nombre", "apellido"].forEach(
           (id) => (document.getElementById(id).value = ""),
@@ -1619,7 +1627,7 @@
       /* ---- GRILLA ---- */
       function renderGrilla() {
         const alumnos = window.getAlumnosDB ? window.getAlumnosDB() : [];
-        const buscar = (document.getElementById("buscarNombre").value || "")
+        const buscar = (document.getElementById("buscarNombre")?.value || "")
           .toLowerCase()
           .trim();
         const horasActivas = HORAS.filter((h) =>
@@ -1628,15 +1636,13 @@
         if (!horasActivas.length) {
           document.getElementById("tablaGrilla").innerHTML =
             `<tbody><tr><td colspan="${DIAS.length + 1}">
-          <div class="empty-state"><div class="big">🧘</div>
-          <p>Todavía no hay inscriptos.<br>¡Completá el formulario!</p></div>
-        </td></tr></tbody>`;
+              <div class="empty-state"><div class="big">🧘</div>
+              <p>Todavía no hay inscriptos.<br>¡Completá el formulario!</p></div>
+            </td></tr></tbody>`;
           return;
         }
         let html = "<thead><tr><th>Hora</th>";
-        DIAS.forEach((d) => {
-          html += `<th>${d}</th>`;
-        });
+        DIAS.forEach((d) => (html += `<th>${d}</th>`));
         html += "</tr></thead><tbody>";
         horasActivas.forEach((hora) => {
           html += `<tr><td>${hora}</td>`;
@@ -1648,10 +1654,10 @@
               html += `<td><div class="celda">`;
               en.forEach((a) => {
                 const info = chipInfo(a.disciplina);
-                const nombre = `${a.nombre} ${a.apellido}`;
-                const hit = buscar && nombre.toLowerCase().includes(buscar);
+                const nomb = `${a.nombre} ${a.apellido}`;
+                const hit = buscar && nomb.toLowerCase().includes(buscar);
                 html += `<span class="alumno-chip ${info.color}${hit ? " highlight" : ""}" title="${a.disciplina}">
-              ${info.icon} ${a.nombre} ${a.apellido}</span>`;
+                  ${info.icon} ${a.nombre} ${a.apellido}</span>`;
               });
               html += `</div></td>`;
             }
@@ -1680,10 +1686,10 @@
             x.disciplina === "Tai Chi (Pame)",
         ).length;
         document.getElementById("statsRow").innerHTML = `
-      <div class="stat-card"><div class="num">${a.length}</div><div class="lbl">Total</div></div>
-      <div class="stat-card"><div class="num">${yogas}</div><div class="lbl">Yoga / Kund.</div></div>
-      <div class="stat-card"><div class="num">${pilates}</div><div class="lbl">Pilates</div></div>
-      <div class="stat-card"><div class="num">${otras}</div><div class="lbl">Otras</div></div>`;
+          <div class="stat-card"><div class="num">${a.length}</div><div class="lbl">Total</div></div>
+          <div class="stat-card"><div class="num">${yogas}</div><div class="lbl">Yoga / Kund.</div></div>
+          <div class="stat-card"><div class="num">${pilates}</div><div class="lbl">Pilates</div></div>
+          <div class="stat-card"><div class="num">${otras}</div><div class="lbl">Otras</div></div>`;
       }
 
       function renderTabla() {
@@ -1701,13 +1707,13 @@
                 .map((x, i) => {
                   const info = chipInfo(x.disciplina);
                   return `<tr>
-        <td style="color:var(--muted)">${i + 1}</td>
-        <td>${x.nombre}</td><td>${x.apellido}</td>
-        <td><span class="pill ${info.color}" style="font-size:11px">${info.icon} ${x.disciplina}</span></td>
-        <td>${x.dia}</td><td>${x.hora} hs</td>
-        <td style="color:var(--muted);font-size:12px">${x.fecha}</td>
-        <td><button class="btn-del" onclick="eliminar('${x.firestoreId}')">✕</button></td>
-      </tr>`;
+            <td style="color:var(--muted)">${i + 1}</td>
+            <td>${x.nombre}</td><td>${x.apellido}</td>
+            <td><span class="pill ${info.color}" style="font-size:11px">${info.icon} ${x.disciplina}</span></td>
+            <td>${x.dia}</td><td>${x.hora} hs</td>
+            <td style="color:var(--muted);font-size:12px">${x.fecha}</td>
+            <td><button class="btn-del" onclick="eliminar('${x.firestoreId}')">✕</button></td>
+          </tr>`;
                 })
                 .join("");
       }
@@ -1716,6 +1722,7 @@
         if (!confirm("¿Eliminar este alumno?")) return;
         await window.eliminarFirebase(id);
       }
+
       async function limpiarTodo() {
         if (
           !confirm(
@@ -1725,6 +1732,26 @@
           return;
         const todos = window.getAlumnosDB();
         for (const a of todos) await window.eliminarFirebase(a.firestoreId);
+      }
+
+      function exportarExcel() {
+        const a = window.getAlumnosDB ? window.getAlumnosDB() : [];
+        if (!a.length) {
+          alert("No hay datos para exportar.");
+          return;
+        }
+        const datos = a.map((x) => ({
+          Nombre: x.nombre,
+          Apellido: x.apellido,
+          Disciplina: x.disciplina,
+          Día: x.dia,
+          Hora: x.hora,
+          "Fecha inscripción": x.fecha,
+        }));
+        const ws = XLSX.utils.json_to_sheet(datos);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Alumnos");
+        XLSX.writeFile(wb, "SatNam_Alumnos.xlsx");
       }
     </script>
   </body>
