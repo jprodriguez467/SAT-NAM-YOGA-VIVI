@@ -310,6 +310,7 @@
       }
 
       input[type="text"],
+      input[type="password"],
       select {
         width: 100%;
         background: var(--surface);
@@ -513,6 +514,17 @@
         display: none;
         animation: fadeUp 0.5s ease both;
       }
+      #horarioLock {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        animation: fadeUp 0.4s ease both;
+      }
+      #horarioContent {
+        display: none;
+      }
       .horario-header {
         text-align: center;
         margin-bottom: 22px;
@@ -686,8 +698,76 @@
         color: #ffe066 !important;
       }
 
+      /* ADMIN PASSWORD OVERLAY */
+      #adminLock {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        animation: fadeUp 0.4s ease both;
+      }
+      .lock-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 40px 36px;
+        max-width: 360px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+      }
+      .lock-card .lock-icon {
+        font-size: 44px;
+        margin-bottom: 16px;
+      }
+      .lock-card h3 {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 26px;
+        letter-spacing: 3px;
+        color: var(--accent);
+        margin-bottom: 6px;
+      }
+      .lock-card p {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 24px;
+      }
+      .lock-card input[type="password"] {
+        text-align: center;
+        font-size: 18px;
+        letter-spacing: 4px;
+        margin-bottom: 14px;
+      }
+      .btn-unlock {
+        width: 100%;
+        padding: 13px;
+        background: linear-gradient(135deg, var(--accent), #0099bb);
+        color: var(--bg);
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 18px;
+        letter-spacing: 3px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          box-shadow 0.2s;
+        box-shadow: 0 8px 30px rgba(0, 229, 255, 0.25);
+      }
+      .btn-unlock:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 229, 255, 0.4);
+      }
+      .lock-error {
+        color: var(--danger);
+        font-size: 13px;
+        margin-top: 10px;
+        display: none;
+      }
+
       /* ADMIN */
-      #adminPanel {
+      #adminContent {
         display: none;
         animation: fadeUp 0.5s ease both;
       }
@@ -756,6 +836,22 @@
       }
       .btn-clear:hover {
         background: rgba(255, 77, 109, 0.2);
+      }
+      .btn-logout {
+        padding: 10px 18px;
+        border-radius: 10px;
+        background: rgba(136, 146, 164, 0.1);
+        color: var(--muted);
+        border: 1.5px solid var(--border);
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .btn-logout:hover {
+        background: rgba(136, 146, 164, 0.2);
+        color: var(--text);
       }
       .filters {
         display: flex;
@@ -1089,10 +1185,15 @@
                 >
               </div>
               <div class="disc-option">
-                <input type="radio" name="disciplina" id="d8" value="Tai Chi" />
+                <input
+                  type="radio"
+                  name="disciplina"
+                  id="d8"
+                  value="Tai Chi (Pame)"
+                />
                 <label for="d8"
                   ><span class="icon">☯️</span>Tai Chi<span class="prof"
-                    >&nbsp;</span
+                    >Pame</span
                   ></label
                 >
               </div>
@@ -1160,128 +1261,192 @@
 
       <!-- ===== GRILLA HORARIOS ===== -->
       <div id="horarioView">
-        <div class="horario-header">
-          <h2>📅 Grilla Semanal</h2>
-          <p>Encontrá tu nombre en el horario que elegiste</p>
+        <!-- PANTALLA DE CONTRASEÑA HORARIOS -->
+        <div id="horarioLock">
+          <div class="lock-card">
+            <div class="lock-icon">🔐</div>
+            <h3>Área de Horarios</h3>
+            <p>Ingresá la contraseña para ver los horarios</p>
+            <input
+              type="password"
+              id="horarioPass"
+              placeholder="Contraseña"
+              onkeydown="if (event.key === 'Enter') verificarPassHorario();"
+              autocomplete="off"
+            />
+            <div class="lock-error" id="lockErrorHorario">
+              Contraseña incorrecta
+            </div>
+            <br />
+            <button class="btn-unlock" onclick="verificarPassHorario()">
+              INGRESAR
+            </button>
+          </div>
         </div>
-        <div class="leyenda" id="leyendaBox"></div>
-        <div class="buscar-wrap">
-          <span class="buscar-icon">🔍</span>
-          <input
-            type="text"
-            id="buscarNombre"
-            placeholder="Buscá tu nombre..."
-            oninput="renderGrilla()"
-          />
-        </div>
-        <div class="grilla-wrap">
-          <table class="grilla" id="tablaGrilla">
-            <tbody>
-              <tr>
-                <td colspan="7">
-                  <div class="loading">
-                    <div class="spinner"></div>
-                    <br />Cargando horarios...
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+
+        <!-- CONTENIDO HORARIOS -->
+        <div id="horarioContent">
+          <div class="horario-header">
+            <h2>📅 Grilla Semanal</h2>
+            <p>Encontrá tu nombre en el horario que elegiste</p>
+            <button
+              class="btn-logout"
+              style="margin-top: 12px"
+              onclick="cerrarSesionHorario()"
+            >
+              🔒 Salir
+            </button>
+          </div>
+          <div class="leyenda" id="leyendaBox"></div>
+          <div class="buscar-wrap">
+            <span class="buscar-icon">🔍</span>
+            <input
+              type="text"
+              id="buscarNombre"
+              placeholder="Buscá tu nombre..."
+              oninput="renderGrilla()"
+            />
+          </div>
+          <div class="grilla-wrap">
+            <table class="grilla" id="tablaGrilla">
+              <tbody>
+                <tr>
+                  <td colspan="7">
+                    <div class="loading">
+                      <div class="spinner"></div>
+                      <br />Cargando horarios...
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       <!-- ===== ADMIN ===== -->
       <div id="adminPanel">
-        <div class="admin-header">
-          <div>
-            <h2>📋 Alumnos Inscriptos</h2>
-            <p>Datos en tiempo real · Firebase</p>
-          </div>
-          <div class="admin-actions">
-            <button class="btn-excel" onclick="exportarExcel()">
-              📊 Exportar a Excel
+        <!-- PANTALLA DE CONTRASEÑA -->
+        <div id="adminLock">
+          <div class="lock-card">
+            <div class="lock-icon">🔐</div>
+            <h3>Área Admin</h3>
+            <p>Ingresá la contraseña para continuar</p>
+            <input
+              type="password"
+              id="adminPass"
+              placeholder="Contraseña"
+              onkeydown="if (event.key === 'Enter') verificarPass();"
+              autocomplete="off"
+            />
+            <div class="lock-error" id="lockError">Contraseña incorrecta</div>
+            <br />
+            <button class="btn-unlock" onclick="verificarPass()">
+              INGRESAR
             </button>
-            <button class="btn-clear" onclick="limpiarTodo()">
-              🗑 Borrar todo
-            </button>
           </div>
         </div>
 
-        <div class="stats-row" id="statsRow">
-          <div class="stat-card">
-            <div class="num">—</div>
-            <div class="lbl">Total</div>
+        <!-- CONTENIDO ADMIN (oculto hasta autenticación) -->
+        <div id="adminContent">
+          <div class="admin-header">
+            <div>
+              <h2>📋 Alumnos Inscriptos</h2>
+              <p>Datos en tiempo real · Firebase</p>
+            </div>
+            <div class="admin-actions">
+              <button class="btn-excel" onclick="exportarExcel()">
+                📊 Exportar a Excel
+              </button>
+              <button class="btn-clear" onclick="limpiarTodo()">
+                🗑 Borrar todo
+              </button>
+              <button class="btn-logout" onclick="cerrarSesionAdmin()">
+                🔒 Salir
+              </button>
+            </div>
           </div>
-          <div class="stat-card">
-            <div class="num">—</div>
-            <div class="lbl">Yoga</div>
-          </div>
-          <div class="stat-card">
-            <div class="num">—</div>
-            <div class="lbl">Pilates</div>
-          </div>
-          <div class="stat-card">
-            <div class="num">—</div>
-            <div class="lbl">Otras</div>
-          </div>
-        </div>
 
-        <div class="filters">
-          <select id="filtroDisc" onchange="renderTabla()">
-            <option value="">Todas las disciplinas</option>
-            <option>Yoga (Vivi)</option>
-            <option>Yoga en Silla</option>
-            <option>Yoga (Constanza)</option>
-            <option>Kundalini</option>
-            <option>Hatha Yoga (Ale)</option>
-            <option>Pilates (Georgina)</option>
-            <option>Taller de Meditación</option>
-            <option>Tai Chi</option>
-          </select>
-          <select id="filtroDia" onchange="renderTabla()">
-            <option value="">Todos los días</option>
-            <option>Lunes</option>
-            <option>Martes</option>
-            <option>Miércoles</option>
-            <option>Jueves</option>
-            <option>Viernes</option>
-            <option>Sábado</option>
-          </select>
-        </div>
+          <div class="stats-row" id="statsRow">
+            <div class="stat-card">
+              <div class="num">—</div>
+              <div class="lbl">Total</div>
+            </div>
+            <div class="stat-card">
+              <div class="num">—</div>
+              <div class="lbl">Yoga</div>
+            </div>
+            <div class="stat-card">
+              <div class="num">—</div>
+              <div class="lbl">Pilates</div>
+            </div>
+            <div class="stat-card">
+              <div class="num">—</div>
+              <div class="lbl">Otras</div>
+            </div>
+          </div>
 
-        <div class="table-wrap">
-          <table class="lista">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Disciplina</th>
-                <th>Día</th>
-                <th>Hora</th>
-                <th>Fecha</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="tablaBody">
-              <tr>
-                <td colspan="8">
-                  <div class="loading">
-                    <div class="spinner"></div>
-                    <br />Cargando...
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="empty-state" id="emptyState" style="display: none">
-            <div class="big">🧘</div>
-            <p>Todavía no hay inscriptos.<br />¡Compartí el formulario!</p>
+          <div class="filters">
+            <select id="filtroDisc" onchange="renderTabla()">
+              <option value="">Todas las disciplinas</option>
+              <option>Yoga (Vivi)</option>
+              <option>Yoga en Silla</option>
+              <option>Yoga (Constanza)</option>
+              <option>Kundalini</option>
+              <option>Hatha Yoga (Ale)</option>
+              <option>Pilates (Georgina)</option>
+              <option>Taller de Meditación</option>
+              <option>Tai Chi (Pame)</option>
+            </select>
+            <select id="filtroDia" onchange="renderTabla()">
+              <option value="">Todos los días</option>
+              <option>Lunes</option>
+              <option>Martes</option>
+              <option>Miércoles</option>
+              <option>Jueves</option>
+              <option>Viernes</option>
+              <option>Sábado</option>
+            </select>
+          </div>
+
+          <div class="table-wrap">
+            <table class="lista">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
+                  <th>Disciplina</th>
+                  <th>Día</th>
+                  <th>Hora</th>
+                  <th>Fecha</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="tablaBody">
+                <tr>
+                  <td colspan="8">
+                    <div class="loading">
+                      <div class="spinner"></div>
+                      <br />Cargando...
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="empty-state" id="emptyState" style="display: none">
+              <div class="big">🧘</div>
+              <p>Todavía no hay inscriptos.<br />¡Compartí el formulario!</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
+
     <script>
+      const ADMIN_PASSWORD = "2207-";
+      let adminAutenticado = false;
+
       const DIAS = [
         "Lunes",
         "Martes",
@@ -1312,7 +1477,7 @@
         { val: "Hatha Yoga (Ale)", icon: "🌿", color: "chip-4" },
         { val: "Pilates (Georgina)", icon: "🤸", color: "chip-5" },
         { val: "Taller de Meditación", icon: "🕯️", color: "chip-6" },
-        { val: "Tai Chi", icon: "☯️", color: "chip-7" },
+        { val: "Tai Chi (Pame)", icon: "☯️", color: "chip-7" },
       ];
 
       function chipInfo(disc) {
@@ -1336,6 +1501,32 @@
       }
       buildLeyenda();
 
+      /* ---- ADMIN PASSWORD ---- */
+      function verificarPass() {
+        const pass = document.getElementById("adminPass").value;
+        if (pass === ADMIN_PASSWORD) {
+          adminAutenticado = true;
+          document.getElementById("adminLock").style.display = "none";
+          document.getElementById("adminContent").style.display = "block";
+          renderStats();
+          renderTabla();
+        } else {
+          document.getElementById("lockError").style.display = "block";
+          document.getElementById("adminPass").value = "";
+          document.getElementById("adminPass").focus();
+          setTimeout(() => {
+            document.getElementById("lockError").style.display = "none";
+          }, 2500);
+        }
+      }
+
+      function cerrarSesionAdmin() {
+        adminAutenticado = false;
+        document.getElementById("adminContent").style.display = "none";
+        document.getElementById("adminLock").style.display = "flex";
+        document.getElementById("adminPass").value = "";
+      }
+
       function showTab(tab) {
         document
           .querySelectorAll(".tab-btn")
@@ -1352,7 +1543,7 @@
         document.getElementById("adminPanel").style.display =
           tab === "admin" ? "block" : "none";
         if (tab === "horario") renderGrilla();
-        if (tab === "admin") {
+        if (tab === "admin" && adminAutenticado) {
           renderStats();
           renderTabla();
         }
@@ -1486,7 +1677,7 @@
         const otras = a.filter(
           (x) =>
             x.disciplina === "Taller de Meditación" ||
-            x.disciplina === "Tai Chi",
+            x.disciplina === "Tai Chi (Pame)",
         ).length;
         document.getElementById("statsRow").innerHTML = `
       <div class="stat-card"><div class="num">${a.length}</div><div class="lbl">Total</div></div>
