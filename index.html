@@ -36,12 +36,10 @@
 
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
-      const COL = "alumnos";
+      const COL = "inscriptos";
 
-      // Base de datos local sincronizada
       let alumnosDB = [];
 
-      // Escuchar cambios en tiempo real
       const q = query(collection(db, COL), orderBy("timestamp", "asc"));
       onSnapshot(
         q,
@@ -50,12 +48,10 @@
             firestoreId: d.id,
             ...d.data(),
           }));
-          // Actualizar dot de conexión
           document.getElementById("connDot").classList.add("online");
           document.getElementById("connDot").classList.remove("offline");
           document.getElementById("connTxt").textContent =
             "Conectado a Firebase";
-          // Re-renderizar si las vistas están activas
           if (
             document.getElementById("horarioContent").style.display === "block"
           )
@@ -75,13 +71,10 @@
         },
       );
 
-      // Exponer funciones al scope global
       window.getAlumnosDB = () => alumnosDB;
-
       window.inscribirFirebase = async (datos) => {
         await addDoc(collection(db, COL), datos);
       };
-
       window.eliminarFirebase = async (id) => {
         await deleteDoc(doc(db, COL, id));
       };
@@ -154,7 +147,6 @@
         z-index: 1;
       }
 
-      /* LOGO */
       .logo {
         text-align: center;
         margin-bottom: 16px;
@@ -188,7 +180,6 @@
         background-clip: text;
       }
 
-      /* CONEXION */
       .conn-bar {
         display: flex;
         align-items: center;
@@ -197,7 +188,6 @@
         font-size: 12px;
         color: var(--muted);
         margin-bottom: 18px;
-        letter-spacing: 0.5px;
       }
       .conn-dot {
         width: 8px;
@@ -214,7 +204,6 @@
         background: var(--danger);
       }
 
-      /* TABS */
       .topnav {
         display: flex;
         justify-content: center;
@@ -242,14 +231,13 @@
         color: var(--accent);
       }
 
-      /* CARD FORM */
       .card {
         background: var(--card);
         border: 1px solid var(--border);
         border-radius: 20px;
         padding: 32px;
         box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
-        max-width: 600px;
+        max-width: 700px;
         margin: 0 auto;
       }
       .step {
@@ -325,7 +313,6 @@
         color: var(--text);
       }
 
-      /* DISCIPLINAS */
       .disciplines-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -382,16 +369,133 @@
         color: rgba(0, 229, 255, 0.6);
       }
 
-      .schedule-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-top: 4px;
-      }
       .divider {
         height: 1px;
         background: var(--border);
         margin: 22px 0;
+      }
+
+      /* ===== GRILLA DE HORARIOS ===== */
+      .horario-selector {
+        margin-top: 10px;
+      }
+      .horario-selector-hint {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 14px;
+        line-height: 1.5;
+      }
+      .horario-selector-hint strong {
+        color: var(--accent);
+      }
+
+      .schedule-table-wrap {
+        overflow-x: auto;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+      }
+      table.schedule-pick {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 480px;
+      }
+      table.schedule-pick thead tr {
+        background: rgba(0, 229, 255, 0.05);
+        border-bottom: 1px solid var(--border);
+      }
+      table.schedule-pick thead th {
+        padding: 10px 8px;
+        text-align: center;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      table.schedule-pick thead th:first-child {
+        width: 64px;
+      }
+      table.schedule-pick tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      table.schedule-pick tbody tr:last-child {
+        border-bottom: none;
+      }
+      table.schedule-pick tbody td {
+        padding: 6px 4px;
+        text-align: center;
+        vertical-align: middle;
+      }
+      table.schedule-pick tbody td:first-child {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 16px;
+        letter-spacing: 2px;
+        color: var(--muted);
+        padding-left: 12px;
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      /* Celdas seleccionables */
+      .cell-toggle {
+        width: 36px;
+        height: 36px;
+        margin: 0 auto;
+        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        background: var(--surface);
+        cursor: pointer;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: transparent;
+        user-select: none;
+      }
+      .cell-toggle:hover {
+        border-color: rgba(0, 229, 255, 0.4);
+        background: rgba(0, 229, 255, 0.05);
+      }
+      .cell-toggle.selected {
+        background: rgba(0, 229, 255, 0.18);
+        border-color: var(--accent);
+        color: var(--accent);
+        box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.15);
+      }
+      .cell-toggle.selected::after {
+        content: "✓";
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .seleccion-resumen {
+        margin-top: 14px;
+        background: rgba(0, 229, 255, 0.05);
+        border: 1px solid rgba(0, 229, 255, 0.15);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 13px;
+        color: var(--muted);
+        min-height: 44px;
+        line-height: 1.8;
+      }
+      .seleccion-resumen .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(0, 229, 255, 0.12);
+        border: 1px solid rgba(0, 229, 255, 0.25);
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 20px;
+        margin: 2px 3px;
+      }
+      .seleccion-resumen .empty-hint {
+        color: var(--border);
+        font-style: italic;
       }
 
       .btn-submit {
@@ -409,6 +513,7 @@
           transform 0.15s,
           box-shadow 0.2s;
         box-shadow: 0 8px 30px rgba(0, 229, 255, 0.25);
+        margin-top: 26px;
       }
       .btn-submit:hover {
         transform: translateY(-2px);
@@ -427,7 +532,7 @@
         border-radius: 14px;
         padding: 24px;
         text-align: center;
-        max-width: 600px;
+        max-width: 700px;
         margin: 16px auto 0;
       }
       .success-box .checkmark {
@@ -459,6 +564,9 @@
         color: var(--accent);
         font-weight: 600;
       }
+      .summary .horario-item {
+        font-size: 13px;
+      }
       .btn-nuevo {
         margin-top: 12px;
         background: transparent;
@@ -487,7 +595,7 @@
         border-color: #ff6b6b !important;
       }
 
-      /* GRILLA */
+      /* GRILLA VISTA */
       #horarioView {
         display: none;
         animation: fadeUp 0.5s ease both;
@@ -1038,6 +1146,7 @@
       <!-- ===== FORMULARIO ===== -->
       <div id="formView">
         <div class="card" id="formCard">
+          <!-- PASO 1: Nombre -->
           <div class="field-group">
             <div class="step">
               <div class="step-num">1</div>
@@ -1069,6 +1178,7 @@
 
           <div class="divider"></div>
 
+          <!-- PASO 2: Disciplina -->
           <div class="field-group">
             <div class="step">
               <div class="step-num">2</div>
@@ -1187,40 +1297,30 @@
 
           <div class="divider"></div>
 
-          <div class="field-group" style="margin-bottom: 28px">
+          <!-- PASO 3: Grilla de días y horarios -->
+          <div class="field-group" style="margin-bottom: 0">
             <div class="step">
               <div class="step-num">3</div>
-              <label>Día y horario</label>
+              <label>Elegí tus días y horarios</label>
             </div>
-            <div class="schedule-grid">
-              <div id="wrap-dia">
-                <select id="dia">
-                  <option value="" disabled selected>— Día —</option>
-                  <option>Lunes</option>
-                  <option>Martes</option>
-                  <option>Miércoles</option>
-                  <option>Jueves</option>
-                  <option>Viernes</option>
-                  <option>Sábado</option>
-                </select>
-                <div class="error-msg" id="err-dia">Elegí un día</div>
+            <div class="horario-selector">
+              <p class="horario-selector-hint">
+                Tocá las celdas para marcar
+                <strong>todos los días y horarios</strong> en que vas a asistir.
+                Podés elegir más de uno.
+              </p>
+              <div class="schedule-table-wrap">
+                <table class="schedule-pick" id="scheduleTable">
+                  <!-- Generada por JS -->
+                </table>
               </div>
-              <div id="wrap-hora">
-                <select id="hora">
-                  <option value="" disabled selected>— Hora —</option>
-                  <option>08:30</option>
-                  <option>09:00</option>
-                  <option>10:00</option>
-                  <option>11:00</option>
-                  <option>14:00</option>
-                  <option>15:00</option>
-                  <option>16:00</option>
-                  <option>17:00</option>
-                  <option>18:00</option>
-                  <option>19:00</option>
-                  <option>20:00</option>
-                </select>
-                <div class="error-msg" id="err-hora">Elegí una hora</div>
+              <div class="seleccion-resumen" id="seleccionResumen">
+                <span class="empty-hint"
+                  >Ningún horario seleccionado aún...</span
+                >
+              </div>
+              <div class="error-msg" id="err-horario" style="margin-top: 4px">
+                Elegí al menos un día y horario
               </div>
             </div>
           </div>
@@ -1463,6 +1563,60 @@
         );
       }
 
+      // ---- Construir tabla de selección de horarios ----
+      function buildScheduleTable() {
+        const table = document.getElementById("scheduleTable");
+        let html = "<thead><tr><th>Hora</th>";
+        DIAS.forEach((d) => (html += `<th>${d}</th>`));
+        html += "</tr></thead><tbody>";
+        HORAS.forEach((hora) => {
+          html += `<tr><td>${hora}</td>`;
+          DIAS.forEach((dia) => {
+            html += `<td><div class="cell-toggle" data-dia="${dia}" data-hora="${hora}" onclick="toggleCelda(this)"></div></td>`;
+          });
+          html += "</tr>";
+        });
+        html += "</tbody>";
+        table.innerHTML = html;
+      }
+      buildScheduleTable();
+
+      function toggleCelda(el) {
+        el.classList.toggle("selected");
+        actualizarResumen();
+      }
+
+      function actualizarResumen() {
+        const seleccionados = document.querySelectorAll(
+          ".cell-toggle.selected",
+        );
+        const resumen = document.getElementById("seleccionResumen");
+        if (!seleccionados.length) {
+          resumen.innerHTML =
+            '<span class="empty-hint">Ningún horario seleccionado aún...</span>';
+          return;
+        }
+        let html = "";
+        seleccionados.forEach((el) => {
+          html += `<span class="tag">📅 ${el.dataset.dia} ${el.dataset.hora} hs</span>`;
+        });
+        resumen.innerHTML = html;
+      }
+
+      function getHorariosSeleccionados() {
+        return Array.from(
+          document.querySelectorAll(".cell-toggle.selected"),
+        ).map((el) => ({ dia: el.dataset.dia, hora: el.dataset.hora }));
+      }
+
+      function limpiarGrilla() {
+        document
+          .querySelectorAll(".cell-toggle.selected")
+          .forEach((el) => el.classList.remove("selected"));
+        actualizarResumen();
+      }
+
+      // ---- Leyenda ----
       function buildLeyenda() {
         document.getElementById("leyendaBox").innerHTML = DISCIPLINAS.map(
           (d) =>
@@ -1474,7 +1628,7 @@
       }
       buildLeyenda();
 
-      /* ---- TABS ---- */
+      // ---- TABS ----
       function showTab(tab) {
         document
           .querySelectorAll(".tab-btn")
@@ -1496,12 +1650,11 @@
           renderTabla();
         }
       }
-      // Estado inicial
       document.getElementById("formView").style.display = "block";
       document.getElementById("horarioView").style.display = "none";
       document.getElementById("adminPanel").style.display = "none";
 
-      /* ---- HORARIO LOCK ---- */
+      // ---- HORARIO LOCK ----
       function verificarPassHorario() {
         if (document.getElementById("horarioPass").value === HORARIO_PASSWORD) {
           horarioAutenticado = true;
@@ -1527,7 +1680,7 @@
         document.getElementById("horarioPass").value = "";
       }
 
-      /* ---- ADMIN LOCK ---- */
+      // ---- ADMIN LOCK ----
       function verificarPass() {
         if (document.getElementById("adminPass").value === ADMIN_PASSWORD) {
           adminAutenticado = true;
@@ -1552,15 +1705,15 @@
         document.getElementById("adminPass").value = "";
       }
 
-      /* ---- FORMULARIO ---- */
+      // ---- FORMULARIO ----
       async function inscribir() {
         const nombre = document.getElementById("nombre").value.trim();
         const apellido = document.getElementById("apellido").value.trim();
         const disciplina = document.querySelector(
           'input[name="disciplina"]:checked',
         );
-        const dia = document.getElementById("dia").value;
-        const hora = document.getElementById("hora").value;
+        const horarios = getHorariosSeleccionados();
+
         let ok = true;
         showErr("wrap-nombre", "err-nombre", !nombre);
         if (!nombre) ok = false;
@@ -1570,27 +1723,43 @@
           ? "block"
           : "none";
         if (!disciplina) ok = false;
-        showErr("wrap-dia", "err-dia", !dia);
-        if (!dia) ok = false;
-        showErr("wrap-hora", "err-hora", !hora);
-        if (!hora) ok = false;
+        document.getElementById("err-horario").style.display =
+          horarios.length === 0 ? "block" : "none";
+        if (!horarios.length) ok = false;
         if (!ok) return;
 
         const btn = document.getElementById("btnSubmit");
         btn.disabled = true;
         btn.textContent = "GUARDANDO...";
+
         try {
-          await window.inscribirFirebase({
-            nombre,
-            apellido,
-            disciplina: disciplina.value,
-            dia,
-            hora,
-            fecha: new Date().toLocaleDateString("es-AR"),
-            timestamp: Date.now(),
-          });
+          // Guardar un registro por cada día/hora seleccionado
+          const fecha = new Date().toLocaleDateString("es-AR");
+          const timestamp = Date.now();
+          for (const h of horarios) {
+            await window.inscribirFirebase({
+              nombre,
+              apellido,
+              disciplina: disciplina.value,
+              dia: h.dia,
+              hora: h.hora,
+              fecha,
+              timestamp,
+            });
+          }
+
+          // Armar resumen
+          const listaHorarios = horarios
+            .map(
+              (h) =>
+                `<div class="horario-item">📅 <span>${h.dia}</span> &nbsp;•&nbsp; ⏰ <span>${h.hora} hs</span></div>`,
+            )
+            .join("");
           document.getElementById("summaryText").innerHTML =
-            `👤 <span>${nombre} ${apellido}</span><br>🏅 <span>${disciplina.value}</span><br>📅 <span>${dia}</span> &nbsp;•&nbsp; ⏰ <span>${hora} hs</span>`;
+            `👤 <span>${nombre} ${apellido}</span><br>
+             🏅 <span>${disciplina.value}</span><br>
+             ${listaHorarios}`;
+
           document.getElementById("formCard").style.display = "none";
           document.getElementById("successBox").style.display = "block";
           window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1601,6 +1770,7 @@
               e.message,
           );
         }
+
         btn.disabled = false;
         btn.textContent = "CONFIRMAR INSCRIPCIÓN";
       }
@@ -1617,14 +1787,13 @@
         document
           .querySelectorAll('input[name="disciplina"]')
           .forEach((r) => (r.checked = false));
-        document.getElementById("dia").value = "";
-        document.getElementById("hora").value = "";
+        limpiarGrilla();
         document.getElementById("successBox").style.display = "none";
         document.getElementById("formCard").style.display = "block";
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
-      /* ---- GRILLA ---- */
+      // ---- GRILLA VISTA ----
       function renderGrilla() {
         const alumnos = window.getAlumnosDB ? window.getAlumnosDB() : [];
         const buscar = (document.getElementById("buscarNombre")?.value || "")
@@ -1633,6 +1802,7 @@
         const horasActivas = HORAS.filter((h) =>
           alumnos.some((a) => a.hora === h),
         );
+
         if (!horasActivas.length) {
           document.getElementById("tablaGrilla").innerHTML =
             `<tbody><tr><td colspan="${DIAS.length + 1}">
@@ -1641,6 +1811,7 @@
             </td></tr></tbody>`;
           return;
         }
+
         let html = "<thead><tr><th>Hora</th>";
         DIAS.forEach((d) => (html += `<th>${d}</th>`));
         html += "</tr></thead><tbody>";
@@ -1668,9 +1839,13 @@
         document.getElementById("tablaGrilla").innerHTML = html;
       }
 
-      /* ---- ADMIN ---- */
+      // ---- ADMIN ----
       function renderStats() {
         const a = window.getAlumnosDB ? window.getAlumnosDB() : [];
+        // Contar alumnos únicos para total
+        const unicos = new Set(
+          a.map((x) => `${x.nombre}|${x.apellido}|${x.disciplina}`),
+        );
         const yogas = a.filter(
           (x) =>
             x.disciplina.startsWith("Yoga") ||
@@ -1686,8 +1861,8 @@
             x.disciplina === "Tai Chi (Pame)",
         ).length;
         document.getElementById("statsRow").innerHTML = `
-          <div class="stat-card"><div class="num">${a.length}</div><div class="lbl">Total</div></div>
-          <div class="stat-card"><div class="num">${yogas}</div><div class="lbl">Yoga / Kund.</div></div>
+          <div class="stat-card"><div class="num">${a.length}</div><div class="lbl">Entradas</div></div>
+          <div class="stat-card"><div class="num">${unicos.size}</div><div class="lbl">Alumnos únicos</div></div>
           <div class="stat-card"><div class="num">${pilates}</div><div class="lbl">Pilates</div></div>
           <div class="stat-card"><div class="num">${otras}</div><div class="lbl">Otras</div></div>`;
       }
@@ -1707,19 +1882,19 @@
                 .map((x, i) => {
                   const info = chipInfo(x.disciplina);
                   return `<tr>
-            <td style="color:var(--muted)">${i + 1}</td>
-            <td>${x.nombre}</td><td>${x.apellido}</td>
-            <td><span class="pill ${info.color}" style="font-size:11px">${info.icon} ${x.disciplina}</span></td>
-            <td>${x.dia}</td><td>${x.hora} hs</td>
-            <td style="color:var(--muted);font-size:12px">${x.fecha}</td>
-            <td><button class="btn-del" onclick="eliminar('${x.firestoreId}')">✕</button></td>
-          </tr>`;
+              <td style="color:var(--muted)">${i + 1}</td>
+              <td>${x.nombre}</td><td>${x.apellido}</td>
+              <td><span class="pill ${info.color}" style="font-size:11px">${info.icon} ${x.disciplina}</span></td>
+              <td>${x.dia}</td><td>${x.hora} hs</td>
+              <td style="color:var(--muted);font-size:12px">${x.fecha}</td>
+              <td><button class="btn-del" onclick="eliminar('${x.firestoreId}')">✕</button></td>
+            </tr>`;
                 })
                 .join("");
       }
 
       async function eliminar(id) {
-        if (!confirm("¿Eliminar este alumno?")) return;
+        if (!confirm("¿Eliminar este registro?")) return;
         await window.eliminarFirebase(id);
       }
 
